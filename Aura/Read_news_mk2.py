@@ -88,51 +88,38 @@ def getNews(category):
             'content': content.lower(),
             'date': date + "|" + time,
         }
-        # print(category+"|||"+ str(date) +"||"+title)
-        if recent(date):
-            for i in range(int(df.shape[0])):  # int(df.shape[0])):
-                if (content).find(str(df.loc[i, 'Key'])) != -1:
-                    # print( int(df.loc[i, 'Rank']),"|"+str(df.loc[i, 'Key'])+"||"+date+"||"+"|" ,content ,)
-                    Favorites_News[int(df.loc[i, 'Rank'])].append(content)
 
-                    break
-        else:
-            pass
-
-        newsDictionary['data'].append(newsObject)
+    return newsObject
 
 
 mk = ['sports', 'technology', 'startup', 'entertainment', 'science', 'automobile']  # ['sports','entertainment',]
 for i in mk:
-    daata = getNews('read/' + i)
+    print(getNews('read/' + i))
 
-
-for r in range(1, 6):  # 1 , 6 are ranks
-    for i in range(len(Favorites_News[r])):
-        if str(Favorites_News[r][i]) not in Top_News:
-            Top_News.append(Favorites_News[r][i])
-
-
-# this point we have all the news in a list
-# for i in Top_News:
-#     print(i)
-
-def read(news, Top):
-    counter = 1
-    for i in range(1, (Top)):
-        print(Top_News[-i])
-        speech = "News" + str(counter) + ", " + str(Top_News[-i]) + ", "
-        engine.say(speech)
-        engine.runAndWait()
-        counter = counter + 1
-
-
-if len(Top_News) > 6:  # if news is > 6 then read only top 6
-    read(Top_News, 7)
-else:
-    read(Top_News, len(Top_News))
-
-speech = "That's the News Today Sir "
-engine.say(speech)
-engine.runAndWait()
 #
+# for r in range(1, 6):  # 1 , 6 are ranks
+#     for i in range(len(Favorites_News[r])):
+#         if str(Favorites_News[r][i]) not in Top_News:
+#             Top_News.append(Favorites_News[r][i])
+#
+#
+#
+# def read(news, Top):
+#     counter = 1
+#     for i in range(1, (Top)):
+#         print(Top_News[-i])
+#         speech = "News" + str(counter) + ", " + str(Top_News[-i]) + ", "
+#         engine.say(speech)
+#         engine.runAndWait()
+#         counter = counter + 1
+#
+#
+# if len(Top_News) > 6:  # if news is > 6 then read only top 6
+#     read(Top_News, 7)
+# else:
+#     read(Top_News, len(Top_News))
+#
+# speech = "That's the News Today Sir "
+# engine.say(speech)
+# engine.runAndWait()
+# #

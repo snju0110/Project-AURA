@@ -24,6 +24,7 @@ urlpatterns = [
     path('Dem/' , views.index),
     path('' , views.DemMainPage),
     path('transactionAnalysis/' , views.DemMainPage),
+    path('getdata/', views.getdata),
 
 
     path('customtransaction/' , views.MonthTable),

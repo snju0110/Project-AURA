@@ -31,5 +31,5 @@ class demDailyData(models.Model):
     groupCat = models.CharField(max_length=200)
 
     def __str__(self):
+        unique_together = ["date", "user", "amount", "sentFrom", "sentTo"]
         return self.user
-

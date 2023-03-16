@@ -59,32 +59,6 @@
                             </form>
                                                       </div>
                                                     </div>
-<!--        <div class="row">-->
-<!--              <div class="col-xl-3 col-sm-2 grid-margin stretch-card">-->
-<!--                <div class="card">-->
-<!--                  <div class="card-body">-->
-<!--                    <div class="row">-->
-<!--                      <div class="col-9">-->
-<!--                        <div class="d-flex align-items-center align-self-start">-->
-<!--                          <h3 class="mb-0">{{ set.0.total_amount  }} /- </h3>-->
-<!--                          <p class="text-success ml-2 mb-0 font-weight-medium"></p>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                      <div class="col-3">-->
-<!--                        <div class="icon icon-box-success ">-->
-<!--                          <span class="mdi mdi-arrow-top-right icon-item"></span>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                    <h6 class="text-muted font-weight-normal">Current User</h6>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-
-
-
-
-
 
           <div class="content-wrapper">
 
@@ -113,7 +87,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{ monthlydata.1.total_amount  }} /- </h3>
+                          <h3 class="mb-0">₹ {{ monthlydata.0.total_amount  }} </h3>
                           <p class="text-success ml-2 mb-0 font-weight-medium"></p>
                         </div>
                       </div>
@@ -123,7 +97,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Spent Current Month</h6>
+                    <h6 class="text-primary ml-2 mb-0 font-weight-medium">Total Spent Current Month</h6>
                   </div>
                 </div>
               </div>
@@ -133,7 +107,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{ monthlydata.0.total_amount  }} /-</h3>
+                          <h3 class="mb-0">₹ {{ monthlydata.1.total_amount  }}-</h3>
                           <p class="text-success ml-2 mb-0 font-weight-medium"></p>
                         </div>
                       </div>
@@ -143,7 +117,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Received Current Month</h6>
+                    <h6 class="text-primary ml-2 mb-0 font-weight-medium">Total Received Current Month</h6>
 
                   </div>
                 </div>
@@ -151,28 +125,54 @@
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <h6 class="text-muted font-weight-normal">Money spend yesterday</h6>
-                    <h6 class="text-muted font-weight-normal">Money received yesterday</h6>
+                        <div class="d-flex align-items-center align-self-start">
+                            {% for i in  category_data %}
+                            {% if i.primaryCat == 'Others' %}
+                            <h3 class="mb-0">₹ {{i.total_amount}}</h3>
+                              <p class="text-info ml-2 mb-0 font-weight-medium">Uncategorized</p>
+
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                      <div><h2 ></h2></div>
+                      <div class="d-flex align-items-center align-self-start">
+                            {% for i in  category_data %}
+                            {% if i.primaryCat == 'Debt' %}
+                          <br>
+                            <h3 class="mb-0">₹ {{i.total_amount}}</h3>
+                              <p class="text-info ml-2 mb-0 font-weight-medium">Debt ></p>
+
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+       <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$31.53</h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
+                            {% for i in ydata %}
+                            {% if i.type == 'Sent' %}
+                            <h3 class="mb-0">₹ {{i.total_amount}}</h3>
+                              <p class="text-warning ml-2 mb-0 font-weight-medium">Yesterday sent</p>
+
+                            {% endif %}
+                            {% endfor %}
                         </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
+                      <div><h2 ></h2></div>
+                      <div class="d-flex align-items-center align-self-start">
+                            {% for i in  ydata %}
+                            {% if i.type == 'Received' %}
+                          <br>
+                            <h3 class="mb-0">₹ {{i.total_amount}}</h3>
+                              <p class="text-primary ml-2 mb-0 font-weight-medium">Yesterday Received </p>
+
+                            {% endif %}
+                            {% endfor %}
                         </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Expense current</h6>
+
                   </div>
                 </div>
               </div>
@@ -194,6 +194,7 @@
                       </div>
                       <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
                         <h6 class="font-weight-bold mb-0">₹ {{ i.amount}}</h6>
+                           <p class="text-muted mb-0">{{i.type}}</p>
                       </div>
                     </div>
                     {% endfor %}
@@ -203,21 +204,18 @@
               </span>
               <span class="menu-title">See all transactions</span>
             </a>
-
                   </div>
                 </div>
               </div>
-
-
                <div class="col-lg-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Bar chart</h4>
                    <canvas id="myChart"></canvas>
-
                   </div>
                 </div>
-              </div>
+               </div>
+            </div>
             </div>
 
 

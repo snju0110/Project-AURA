@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.db.models import Sum
 from datetime import datetime, date
+from datetime import timedelta
 
 
 @api_view(['GET', 'POST'])
@@ -29,6 +30,28 @@ def DemDailyData(requests):
     if requests.method == 'GET':
         queryset = demDailyData.objects.all()
         # queryset = demDailyData.objects.filter(primaryCat = 'Travel')
+        serializer = demDailyDataSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    if requests.method == 'POST':
+        serializer = demDailyDataSerializer(data=requests.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    if requests.method == 'PUT':
+        serializer = demDailyDataSerializer(data=requests.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'POST', 'PUT'])
+def getdata(requests):
+    if requests.method == 'GET':
+        queryset = demDailyData.objects.filter(user='Sanjay').order_by('-date')[:1]
         serializer = demDailyDataSerializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
 
@@ -84,30 +107,36 @@ def date1(request):
 def DemMainPage(request):
     try:
         MonthStartDate = request.GET["fdate"]
+
         today = request.GET["tdate"]
-        answer = request.GET['Select']
-        print("ret")
+        today1 = t.strftime('%Y-%m-%d')
+        print("--- mss" , today , MonthStartDate )
+        yesterday = today - timedelta(days=1)
+        print("---- input got from front end")
     except:
         today = date.today()
         startdate = str(date.today()).split('-')
         MonthStartDate = str(startdate[0]) + '-' + str(startdate[1]) + '-01'
+        yesterday = today - timedelta(days=1)
+        print(yesterday , today)
         print("excpet")
-    user = 'Avinash'
-
+    user = 'Sanjay'
 
     monthlydata = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).values('type').annotate(
-    total_amount=Sum('amount'))
+        total_amount=Sum('amount'))
 
+    ydata = demDailyData.objects.filter(date=yesterday, user=user).values('type').annotate(
+        total_amount=Sum('amount'))
     category_data = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).values(
-    'primaryCat').annotate(total_amount=Sum('amount'))
+        'primaryCat').annotate(total_amount=Sum('amount'))
 
-    last5 = demDailyData.objects.filter(user=user).order_by('-date')[:5]
-    customstranscation = demDailyData.objects.filter(date__range=["2023-02-20", "2023-02-28"], user='Avinash')
-    print("-----temp-------------------", category_data)
+    last5 = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).order_by('-date')[:5]
+
+    print("-----ydata-------------------", ydata)
     cat = []
     catVal = []
     for i in category_data:
-        if i['primaryCat'] != 'Received_NC':
+        if i['primaryCat'] not in ('Received_NC', 'Others'):
             cat.append(i['primaryCat'])
             catVal.append(i['total_amount'])
 
@@ -116,7 +145,9 @@ def DemMainPage(request):
         'set1': last5,
         'cat': cat,
         'catVal': catVal,
-        'customstranscation': customstranscation
+        'category_data': category_data,
+        'ydata': ydata
+
     }
 
     return render(request, "DEM.html", context)
@@ -131,20 +162,21 @@ def Temp1(request):
         total_amount=Sum('amount'))
     set1 = demDailyData.objects.filter(user='Sanjay').order_by('-date')[:5]
 
-
-
     cat = []
     catVal = []
     for i in category_data:
         cat.append(i['primaryCat'])
         catVal.append(i['total_amount'])
 
+    print(cat.index('others'))
+    print(catVal[cat.index('others')])
+
     context = {
         'set': set,
         'set1': set1,
         'cat': cat,
         'catVal': catVal,
-        
+
     }
 
     return render(request, "CustomTransaction.html", context)
@@ -160,7 +192,7 @@ def MonthTable(request):
         MonthStartDate = str(startdate[0]) + '-' + str(startdate[1]) + '-01'
     user = 'Avinash'
 
-    set = demDailyData.objects.filter(date__range=[MonthStartDate, today] , user = user).order_by('-date')
+    set = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).order_by('-date')
 
     context = {
         'set': set
@@ -190,4 +222,3 @@ def News(request):
     }
 
     return render(request, "index.html", context)
-
