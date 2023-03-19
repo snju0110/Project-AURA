@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from dataLoggingApi.models import *
 from .serializers import *
@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from django.db.models import Sum
 from datetime import datetime, date
 from datetime import timedelta
+from django.contrib.auth.models import User, auth
+from django.contrib import messages
 
 
 @api_view(['GET', 'POST'])
@@ -104,13 +106,71 @@ def date1(request):
     return render(request, "index1.html", context)
 
 
+def Login(request):
+    if request.method == 'POST':
+        name = request.POST['uname']
+        password = request.POST['psw']
+        # validation
+
+        user = auth.authenticate(username=name, password=password)
+        print("USER", user)
+        if user is not None:
+            print("Right login")
+            auth.login(request, user)
+            return redirect('main')
+        else:
+            messages.info(request, "Check User name or password")
+            return render(request, "Login.html")
+
+
+    else:
+        print("sdkhbdsgibdgubg not logged in ")
+
+    return render(request, "Login.html")
+
+
+def Logout(request):
+    auth.logout(request)
+    print("logged out")
+    return redirect("/")
+
+
+def NLogin(request):
+    print("Nlogin")
+    if request.method == 'POST':
+        name = request.POST['UserName']
+        password = request.POST['password']
+        user = auth.authenticate(username=name, password=password)
+        print("USER", user)
+        if user is not None:
+            print("Right login")
+            auth.login(request, user)
+            return redirect('main')
+        else:
+            messages.info(request, "Check User name or password")
+            return render(request, "LoginNew.html")
+
+
+    else:
+        print("sdkhbdsgibdgubg not logged in ")
+
+    return render(request, "LoginNew.html")
+
+
+def Jarvis_Headsup(request):
+    return render(request, "jarvis_UI.html")
+
+
 def DemMainPage(request):
+    # print("------------------" , user.username)
     try:
+        current_user = request.user
+        print(current_user.id)
         MonthStartDate = request.GET["fdate"]
 
         today = request.GET["tdate"]
-        today1 = t.strftime('%Y-%m-%d')
-        print("--- mss" , today , MonthStartDate )
+
+        print("--- mss", today, MonthStartDate)
         yesterday = today - timedelta(days=1)
         print("---- input got from front end")
     except:
@@ -118,11 +178,17 @@ def DemMainPage(request):
         startdate = str(date.today()).split('-')
         MonthStartDate = str(startdate[0]) + '-' + str(startdate[1]) + '-01'
         yesterday = today - timedelta(days=1)
-        print(yesterday , today)
+        print(yesterday, today)
         print("excpet")
-    user = 'Sanjay'
+    current_user = request.user
+    user = current_user.username
 
-    monthlydata = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).values('type').annotate(
+    monthlydata = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).values('type').annotate(total_amount=Sum('amount'))
+
+    datewisespent = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user , type='Sent').values('date').annotate(
+        total_amount=Sum('amount'))
+    datewiserecv = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user, type='Received').values(
+        'date').annotate(
         total_amount=Sum('amount'))
 
     ydata = demDailyData.objects.filter(date=yesterday, user=user).values('type').annotate(
@@ -132,21 +198,39 @@ def DemMainPage(request):
 
     last5 = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).order_by('-date')[:5]
 
-    print("-----ydata-------------------", ydata)
-    cat = []
-    catVal = []
+    cat , catVal = [] , []
+    days, day_spent = [], []
+    dayr, day_recv = [], []
+
     for i in category_data:
         if i['primaryCat'] not in ('Received_NC', 'Others'):
             cat.append(i['primaryCat'])
             catVal.append(i['total_amount'])
 
+    for i in datewisespent:
+        q_date = i['date']
+        f_date = q_date.strftime("%Y-%m-%d")
+        days.append(f_date)
+        day_spent.append(i['total_amount'])
+    for i in datewiserecv:
+        q_date = i['date']
+        f_date = q_date.strftime("%Y-%m-%d")
+        dayr.append(f_date)
+        day_recv.append(i['total_amount'])
+    print(days , day_spent)
+    print(dayr, day_recv)
+    print(cat, catVal)
     context = {
         'monthlydata': monthlydata,
         'set1': last5,
         'cat': cat,
         'catVal': catVal,
+        'days':days,
+        'day_spent':day_spent,
+        'dayr': dayr,
+        'day_recv': day_recv,
         'category_data': category_data,
-        'ydata': ydata
+        'ydata': ydata,
 
     }
 
@@ -183,14 +267,16 @@ def Temp1(request):
 
 
 def MonthTable(request):
+    current_user = request.user
+    user = current_user.username
     try:
+        print("inside")
         MonthStartDate = request.GET["fdate"]
         today = request.GET["tdate"]
     except:
         today = date.today()
         startdate = str(date.today()).split('-')
         MonthStartDate = str(startdate[0]) + '-' + str(startdate[1]) + '-01'
-    user = 'Avinash'
 
     set = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).order_by('-date')
 

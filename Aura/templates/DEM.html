@@ -43,21 +43,18 @@
 
                       </div>
                       <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0">User Name :Avinash </h6>
-                          <label for="cars">Select User :</label>
+                        <h6 class="font-weight-bold mb-0">UserName : {{user.username}}</h6>
 
-                                                          <form action="/transactionAnalysis/">
-                              <select >
-                                <option selected="selected" disabled>Objects on page:</option>
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                                <option value="40">40</option>
-                                <option value="50">50</option>
-                              </select>
-                              <input type="submit" value="Select">
-                            </form>
+
+
                                                       </div>
+
+      <a class="nav-link" href="/Logout/">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout"></i>
+              </span>
+              <span class="menu-title">Logout</span>
+            </a>
                                                     </div>
 
           <div class="content-wrapper">
@@ -87,8 +84,13 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">₹ {{ monthlydata.0.total_amount  }} </h3>
+
+                            {% for i in  monthlydata %}
+                            {% if i.type == 'Sent' %}
+                          <h3 class="mb-0">₹ {{ i.total_amount  }} </h3>
                           <p class="text-success ml-2 mb-0 font-weight-medium"></p>
+                            {% endif %}
+                            {% endfor %}
                         </div>
                       </div>
                       <div class="col-3">
@@ -107,7 +109,11 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">₹ {{ monthlydata.1.total_amount  }}-</h3>
+                            {% for i in  monthlydata %}
+                            {% if i.type == 'Received' %}
+                          <h3 class="mb-0"> ₹ {{ i.total_amount  }} </h3>
+                             {% endif %}
+                            {% endfor %}
                           <p class="text-success ml-2 mb-0 font-weight-medium"></p>
                         </div>
                       </div>
@@ -156,7 +162,7 @@
                             {% for i in ydata %}
                             {% if i.type == 'Sent' %}
                             <h3 class="mb-0">₹ {{i.total_amount}}</h3>
-                              <p class="text-warning ml-2 mb-0 font-weight-medium">Yesterday sent</p>
+                              <p class="text-warning ml-2 mb-0 font-weight-medium">Yesterday sent {{user.username}}</p>
 
                             {% endif %}
                             {% endfor %}
@@ -210,18 +216,30 @@
                <div class="col-lg-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Bar chart</h4>
+                    <h4 class="card-title">Spending Category</h4>
                    <canvas id="myChart"></canvas>
                   </div>
                 </div>
                </div>
             </div>
-            </div>
 
 
+ <div class="col-lg-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Day wise Spending's Amount</h4>
+                   <canvas id="myChart1"></canvas>
+                  </div>
+                </div>
+     <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Day wise Received Amount</h4>
+                   <canvas id="myChart2"></canvas>
+                  </div>
+                </div>
+               </div>
 
-
-
+   </div>
 
 
 
@@ -240,6 +258,48 @@
         label: 'Money Spent',
         data:{{ catVal|safe }},
         borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  const ctx1 = document.getElementById('myChart1');
+   new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: {{ days|safe }},
+      datasets: [{
+        label: 'Money Spent',
+        data:{{ day_spent|safe }},
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+    const ctx2 = document.getElementById('myChart2');
+   new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: {{ dayr|safe }},
+      datasets: [{
+        label: 'Money Received',
+        data:{{ day_recv|safe }},
+        borderWidth: 1
+
+
       }]
     },
     options: {

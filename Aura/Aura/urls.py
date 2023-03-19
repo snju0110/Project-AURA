@@ -22,7 +22,11 @@ urlpatterns = [
     path('datalog/' , views.DemDailyData),
     path('Dem/date', views.date),
     path('Dem/' , views.index),
-    path('' , views.DemMainPage),
+    path('login/' , views.Login),
+    path('' , views.NLogin),
+    path('Jarvis/' , views.Jarvis_Headsup),
+    path('Logout/' , views.Logout),
+    path('Dem/Main/' , views.DemMainPage ,name= "main"),
     path('transactionAnalysis/' , views.DemMainPage),
     path('getdata/', views.getdata),
 
