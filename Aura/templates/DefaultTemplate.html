@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Daily Expenses Manager</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/jvectormap/jquery-jvectormap.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'assets/images/Arc.png' %}" />
+  </head>
+  <body>
+
+  <div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-1 px-4 px-md-3 px-xl-4 rounded mt-3">
+      <div class="text-md-center text-xl-left">
+          <h6 class="mb-1">Edit Transactions</h6>
+
+      </div>
+      <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+           <h6 class="font-weight-bold mb-0">UserName : {{user.username}}</h6>
+      </div>
+      <a class="nav-link" href="/Logout/">
+          <span class="menu-icon">
+              <i class="mdi mdi-logout"></i>
+          </span>
+          <span class="menu-title">Logout</span>
+      </a>
+  </div>
+
+  <div class="content-wrapper">
+
+          <div class="card-body py-0 px-0 px-sm-3">
+              <div class="row align-items-center">
+                  <div class="col-4 col-sm-3 col-xl-2">
+                  </div>
+
+                  </div>
+              </div>
+          </div>
+
+
+<!--                        <span>-->
+<!-- <form action="/transactionAnalysis/">-->
+
+<!--                            <input  type="date"  name="fdate">-->
+
+<!--                            <input   type="date"  name="tdate">-->
+<!--                            <input type="submit" value="Submit">-->
+<!--                   </form>-->
+
+  </body>

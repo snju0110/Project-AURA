@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from dataLoggingApi.models import *
 from .serializers import *
@@ -52,8 +52,10 @@ def DemDailyData(requests):
 
 @api_view(['GET', 'POST', 'PUT'])
 def getdata(requests):
+    current_user = requests.user
+    user = current_user.username
     if requests.method == 'GET':
-        queryset = demDailyData.objects.filter(user='Sanjay').order_by('-date')[:1]
+        queryset = demDailyData.objects.filter(user=user).order_by('-date')[:1]
         serializer = demDailyDataSerializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
 
@@ -70,6 +72,38 @@ def getdata(requests):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'POST', 'PUT'])
+def edit(request, id):
+    print(id)
+
+    if request.method == 'GET':
+        queryset = demDailyData.objects.get(id=id)
+
+        date = (queryset.date).strftime("%Y-%m-%d")
+        context = {
+            'formData': queryset
+        }
+        # return JsonResponse(serializer.data, safe=False)
+        return render(request, "Demform.html", context)
+    if request.method == 'POST':
+        user = request.POST["user"]
+        amount = request.POST["amount"]
+        sf = request.POST["sf"]
+        st = request.POST["st"]
+        date = request.POST["date"]
+        tm = request.POST["tm"]
+        Ttype = request.POST["Ttype"]
+        cat = request.POST["cat"]
+        pcat = request.POST["gc"]
+
+        data = demDailyData.objects.filter(id=id).update(
+            user=user, date=date, amount=amount, sentFrom=sf, sentTo=st, message=tm, type=Ttype, primaryCat=cat,
+            groupCat=pcat)
+
+        print("iser:", id, user, sf, st, date, tm, Ttype, cat, amount, pcat)
+        return render(request, "Monthlytable.html", )
 
 
 def index(request):
@@ -171,7 +205,9 @@ def DemMainPage(request):
         today = request.GET["tdate"]
 
         print("--- mss", today, MonthStartDate)
-        yesterday = today - timedelta(days=1)
+        formatted_today = datetime.strptime(today, "%Y-%m-%d")
+        yesterday = formatted_today - timedelta(days=1)
+        print(yesterday)
         print("---- input got from front end")
     except:
         today = date.today()
@@ -183,9 +219,11 @@ def DemMainPage(request):
     current_user = request.user
     user = current_user.username
 
-    monthlydata = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).values('type').annotate(total_amount=Sum('amount'))
+    monthlydata = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).values('type').annotate(
+        total_amount=Sum('amount'))
 
-    datewisespent = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user , type='Sent').values('date').annotate(
+    datewisespent = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user, type='Sent').values(
+        'date').annotate(
         total_amount=Sum('amount'))
     datewiserecv = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user, type='Received').values(
         'date').annotate(
@@ -198,7 +236,7 @@ def DemMainPage(request):
 
     last5 = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).order_by('-date')[:5]
 
-    cat , catVal = [] , []
+    cat, catVal = [], []
     days, day_spent = [], []
     dayr, day_recv = [], []
 
@@ -217,16 +255,14 @@ def DemMainPage(request):
         f_date = q_date.strftime("%Y-%m-%d")
         dayr.append(f_date)
         day_recv.append(i['total_amount'])
-    print(days , day_spent)
-    print(dayr, day_recv)
-    print(cat, catVal)
+
     context = {
         'monthlydata': monthlydata,
         'set1': last5,
         'cat': cat,
         'catVal': catVal,
-        'days':days,
-        'day_spent':day_spent,
+        'days': days,
+        'day_spent': day_spent,
         'dayr': dayr,
         'day_recv': day_recv,
         'category_data': category_data,
@@ -245,7 +281,7 @@ def Temp1(request):
     category_data = demDailyData.objects.filter(date__range=["2023-02-20", "2023-03-03"]).values('primaryCat').annotate(
         total_amount=Sum('amount'))
     set1 = demDailyData.objects.filter(user='Sanjay').order_by('-date')[:5]
-
+    print("category_data = ", category_data)
     cat = []
     catVal = []
     for i in category_data:

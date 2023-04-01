@@ -23,6 +23,7 @@ urlpatterns = [
     path('Dem/date', views.date),
     path('Dem/' , views.index),
     path('login/' , views.Login),
+    path('edit/<int:id>' , views.edit , name= "formdata"),
     path('' , views.NLogin),
     path('Jarvis/' , views.Jarvis_Headsup),
     path('Logout/' , views.Logout),

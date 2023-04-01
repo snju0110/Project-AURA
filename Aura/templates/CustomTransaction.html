@@ -54,8 +54,9 @@
                             <th> Debited from </th>
                             <th> Credited to </th>
                             <th> Amount </th>
-                            <th> Category </th>
+                            <th> CategoryY </th>
                             <th> Transcation Message </th>
+                            <th> ID </th>
                           </tr>
                         </thead>
                         {% for i in set %}
@@ -81,6 +82,7 @@
                             <td> {{i.amount}} </td>
                             <td> {{i.primaryCat}}  </td>
                             <td> {{i.message}} </td>
+                            <td> {{i.id}} </td>
 
                         </tbody>
                         {% endfor %}

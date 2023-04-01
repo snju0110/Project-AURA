@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Corona Admin</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/select2/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'assets/images/Arc.png' %}" />
+  </head>
+  <body>
+    <div class="container-scroller">
+
+              <div class="col-12 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Edit Transaction Details</h4>
+                    <form class="form-sample" action = "/edit/{{formData.id}}" method = "POST">
+                      {% csrf_token %}
+                      <p class="card-description"> {{formData}} </p>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">User</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" value = {{formData.user|escape}} name = 'user'>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Debited From</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" value = "{{formData.sentFrom|escape}}" name = 'sf'>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Transaction type</label>
+                            <div class="col-sm-9">
+                              <select  name = 'Ttype' class="form-control" >
+                                <option value = {{formData.type}} selected >Original Value: {{formData.type}} </option>
+                                <option value = Sent >Sent</option>
+                                <option value = Received >Received</option>
+                                <option value = Recharge>Recharge</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Date</label>
+                            <div class="col-sm-9">
+                              <input type="date" class="form-control" value = {{formData.date|escape}} name = 'date'>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Category</label>
+                            <div class="col-sm-9">
+                              <select class="form-control" name = 'cat'>
+                                <option value = {{formData.primaryCat}} selected >Original Value: {{formData.primaryCat}}'</option>
+                                <option value = Bills&Payments > Bills&Payments</option>
+                                <option value = Kitchen&Grocery >Kitchen&Grocery</option>
+                                <option value = Shoppings >Shoppings</option>
+                                <option value = Food&Drinks >Food&Drinks</option>
+                                <option value = Received_NC >Received_NC</option>
+                                <option value = Medical >Medical</option>
+                                 <option value = Travel >Travel</option>
+                                <option value = Others > Others</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Transaction message</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control"  value = "{{formData.message|escape}}" name = 'tm'>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Credited to</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" value ="{{formData.sentTo}}" name = 'st' >
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label"  >Primary Category</label>
+                            <div class="col-sm-9">
+                              <input class="form-control" type = 'text'  value={{formData.groupCat}}  name = 'gc'>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                       <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Amount</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" value = "{{formData.amount}}" name = 'amount'>
+                            </div>
+                          </div>
+                        </div>
+                         <input class = "btn btn-primary mr-2"   type="submit" value="OK">
+                         <a  class="btn btn-dark" href = '/customtransaction/'>Cancel</a>
+                    </form>
+                  </div>
+                </div>
+              </div>
+      </div>
+
+  </body>
+</html>
