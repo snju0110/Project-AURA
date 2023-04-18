@@ -14,25 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from dataLoggingApi import  views
+from django.urls import path , include
+from dataLoggingApi import views
+from DocManager import views as DocViews
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('drinks/' , views.demDataloggingGet),
-    path('datalog/' , views.DemDailyData),
-    path('Dem/date', views.date),
-    path('Dem/' , views.index),
-    path('login/' , views.Login),
-    path('edit/<int:id>' , views.edit , name= "formdata"),
-    path('' , views.NLogin),
-    path('Jarvis/' , views.Jarvis_Headsup),
-    path('Logout/' , views.Logout),
-    path('Dem/Main/' , views.DemMainPage ,name= "main"),
-    path('transactionAnalysis/' , views.DemMainPage),
-    path('getdata/', views.getdata),
+    # path('dem/' , include('dataLoggingApi.urls')) ,
+    path('datalog/', views.DemDailyData),
+    path('edit/<int:id>', views.edit_records, name="formdata"),  # edit dem data
+    path('', views.Login),  # login page
+    path('Logout/', views.Logout),  # logout
+    path('Jarvis/', views.Jarvis_Headsup),  # Jarvis DashBoard
+    path('Dem/Main/', views.DemMainPage, name="main"),  # landing page
+    path('transactionAnalysis/', views.DemMainPage),
+    path('docmanager/', DocViews.save_doc_data),
+    path('customtransaction/', views.MonthTable),  # all records table
 
-
-    path('customtransaction/' , views.MonthTable),
-path('Monthly/user/' , views.user) ,
-path('index/' , views.News) ,
 ]

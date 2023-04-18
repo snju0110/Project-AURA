@@ -29,7 +29,10 @@ class demDailyData(models.Model):
     message = models.CharField(max_length=200)
     primaryCat = models.CharField(max_length=200)
     groupCat = models.CharField(max_length=200)
+    trip = models.CharField(max_length=200 ,  null=True)
+
+    # class Meta:
+    #     unique_together = ("amount", "sentFrom")
 
     def __str__(self):
-        unique_together = ["date", "user", "amount", "sentFrom", "sentTo"]
         return self.user

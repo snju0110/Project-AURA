@@ -12,26 +12,10 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 
 
-@api_view(['GET', 'POST'])
-def demDataloggingGet(requests):
-    if requests.method == 'GET':
-        data = demDatatable.objects.all()
-        print(data)
-        serializer = demDataLoggingSerializer(data, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-    if requests.method == 'POST':
-        serializer = demDataLoggingSerializer(data=requests.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
 @api_view(['GET', 'POST', 'PUT'])
 def DemDailyData(requests):
     if requests.method == 'GET':
         queryset = demDailyData.objects.all()
-        # queryset = demDailyData.objects.filter(primaryCat = 'Travel')
         serializer = demDailyDataSerializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
 
@@ -51,116 +35,33 @@ def DemDailyData(requests):
 
 
 @api_view(['GET', 'POST', 'PUT'])
-def getdata(requests):
-    current_user = requests.user
-    user = current_user.username
-    if requests.method == 'GET':
-        queryset = demDailyData.objects.filter(user=user).order_by('-date')[:1]
-        serializer = demDailyDataSerializer(queryset, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-    if requests.method == 'POST':
-        serializer = demDailyDataSerializer(data=requests.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    if requests.method == 'PUT':
-        serializer = demDailyDataSerializer(data=requests.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-@api_view(['GET', 'POST', 'PUT'])
-def edit(request, id):
-    print(id)
-
+def edit_records(request, id):
     if request.method == 'GET':
+        print("Records pushed for ID: {id}".format(id=id))
         queryset = demDailyData.objects.get(id=id)
-
-        date = (queryset.date).strftime("%Y-%m-%d")
+        queryset.date.strftime("%Y-%m-%d")
         context = {
             'formData': queryset
         }
-        # return JsonResponse(serializer.data, safe=False)
-        return render(request, "Demform.html", context)
+        return render(request, "dem_record_edit_form.html", context)
     if request.method == 'POST':
+        print("request for edit record for ID: {id}".format(id=id))
         user = request.POST["user"]
         amount = request.POST["amount"]
         sf = request.POST["sf"]
         st = request.POST["st"]
-        date = request.POST["date"]
+        t_date = request.POST["date"]
         tm = request.POST["tm"]
         Ttype = request.POST["Ttype"]
         cat = request.POST["cat"]
         pcat = request.POST["gc"]
 
         data = demDailyData.objects.filter(id=id).update(
-            user=user, date=date, amount=amount, sentFrom=sf, sentTo=st, message=tm, type=Ttype, primaryCat=cat,
+            user=user, date=t_date, amount=amount, sentFrom=sf, sentTo=st, message=tm, type=Ttype, primaryCat=cat,
             groupCat=pcat)
 
-        print("iser:", id, user, sf, st, date, tm, Ttype, cat, amount, pcat)
-        return render(request, "Monthlytable.html", )
-
-
-def index(request):
-    # create a dictionary
-    queryset = demDailyData.objects.all()
-    set = demDailyData.objects.filter(user='Sanjay')
-    results = request.GET.get("results")
-    context = {
-        'queryset': queryset,
-        'set': set
-    }
-    # return response
-    return render(request, "index1.html", context)
-
-
-def date1(request):
-    # queryset = demDailyData.objects.filter(date='2023-02-26')
-
-    date = request.GET["dateF"]
-    # print("----------------------------------------------------------------------------||" , request.GET["dateF"])
-    set = demDailyData.objects.filter(date__range=["2023-02-20", date], user='Sanjay').values('primaryCat').annotate(
-        total_amount=Sum('amount'))
-    queryset = demDailyData.objects.all()
-    print("-------------------------------------------------------------", set)
-    queryset = demDailyData.objects.filter(date=date)
-    # print(demDailyData.objects.last().date)
-    results = request.GET.get("results")
-    context = {
-        'queryset': queryset,
-        'set': set
-    }
-
-    # return response
-    return render(request, "index1.html", context)
-
-
-def Login(request):
-    if request.method == 'POST':
-        name = request.POST['uname']
-        password = request.POST['psw']
-        # validation
-
-        user = auth.authenticate(username=name, password=password)
-        print("USER", user)
-        if user is not None:
-            print("Right login")
-            auth.login(request, user)
-            return redirect('main')
-        else:
-            messages.info(request, "Check User name or password")
-            return render(request, "Login.html")
-
-
-    else:
-        print("sdkhbdsgibdgubg not logged in ")
-
-    return render(request, "Login.html")
+        print("New edited data: ", id, user, sf, st, date, tm, Ttype, cat, amount, pcat)
+        return MonthTable(request)
 
 
 def Logout(request):
@@ -169,30 +70,28 @@ def Logout(request):
     return redirect("/")
 
 
-def NLogin(request):
-    print("Nlogin")
+def Login(request):
     if request.method == 'POST':
         name = request.POST['UserName']
         password = request.POST['password']
         user = auth.authenticate(username=name, password=password)
-        print("USER", user)
+
         if user is not None:
-            print("Right login")
             auth.login(request, user)
+            print("Logged in as ", user)
             return redirect('main')
         else:
+            print("login failed")
             messages.info(request, "Check User name or password")
-            return render(request, "LoginNew.html")
-
-
+            return render(request, "login_page.html")
     else:
-        print("sdkhbdsgibdgubg not logged in ")
+        pass
 
-    return render(request, "LoginNew.html")
+    return render(request, "login_page.html")
 
 
 def Jarvis_Headsup(request):
-    return render(request, "jarvis_UI.html")
+    return render(request, "jarvis_dashboard.html")
 
 
 def DemMainPage(request):
@@ -204,18 +103,24 @@ def DemMainPage(request):
 
         today = request.GET["tdate"]
 
+
+
         print("--- mss", today, MonthStartDate)
         formatted_today = datetime.strptime(today, "%Y-%m-%d")
         yesterday = formatted_today - timedelta(days=1)
         print(yesterday)
         print("---- input got from front end")
+        selected_date = {'from_date': MonthStartDate, 'to_date': today}
+        print("selected dates : ", selected_date)
     except:
         today = date.today()
+        parsed_today = today.strftime("%Y-%m-%d")
         startdate = str(date.today()).split('-')
         MonthStartDate = str(startdate[0]) + '-' + str(startdate[1]) + '-01'
         yesterday = today - timedelta(days=1)
-        print(yesterday, today)
-        print("excpet")
+        selected_date = {'from_date': MonthStartDate, 'to_date': parsed_today}
+        print("selected dates : ", selected_date)
+
     current_user = request.user
     user = current_user.username
 
@@ -255,7 +160,7 @@ def DemMainPage(request):
         f_date = q_date.strftime("%Y-%m-%d")
         dayr.append(f_date)
         day_recv.append(i['total_amount'])
-
+    print(day_spent)
     context = {
         'monthlydata': monthlydata,
         'set1': last5,
@@ -267,80 +172,41 @@ def DemMainPage(request):
         'day_recv': day_recv,
         'category_data': category_data,
         'ydata': ydata,
+        'selected_date':selected_date
 
     }
 
-    return render(request, "DEM.html", context)
-
-
-def Temp1(request):
-    fromdate = request.GET["fdate"]
-    todate = request.GET["tdate"]
-    set = demDailyData.objects.filter(date__range=["2023-02-20", "2023-02-28"]).values('user', 'type').annotate(
-        total_amount=Sum('amount'))
-    category_data = demDailyData.objects.filter(date__range=["2023-02-20", "2023-03-03"]).values('primaryCat').annotate(
-        total_amount=Sum('amount'))
-    set1 = demDailyData.objects.filter(user='Sanjay').order_by('-date')[:5]
-    print("category_data = ", category_data)
-    cat = []
-    catVal = []
-    for i in category_data:
-        cat.append(i['primaryCat'])
-        catVal.append(i['total_amount'])
-
-    print(cat.index('others'))
-    print(catVal[cat.index('others')])
-
-    context = {
-        'set': set,
-        'set1': set1,
-        'cat': cat,
-        'catVal': catVal,
-
-    }
-
-    return render(request, "CustomTransaction.html", context)
+    return render(request, "dem_main_page.html", context)
 
 
 def MonthTable(request):
     current_user = request.user
     user = current_user.username
+
     try:
-        print("inside")
         MonthStartDate = request.GET["fdate"]
         today = request.GET["tdate"]
+        column_filter = request.GET["column_filter"]
+        selected_date = {'from_date' : MonthStartDate , 'to_date': today , "column_filter":column_filter }
+        print("selected dates : " , selected_date)
     except:
         today = date.today()
+        parsed_today = today.strftime("%Y-%m-%d")
         startdate = str(date.today()).split('-')
         MonthStartDate = str(startdate[0]) + '-' + str(startdate[1]) + '-01'
+        selected_date = {'from_date' : MonthStartDate , 'to_date': parsed_today , "column_filter":'All_records' }
+        print("Auto sleleced for month", selected_date)
 
-    set = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).order_by('-date')
+    if selected_date['column_filter'] == 'All_records':
+        set = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user , ).order_by('-date')
+    else:
+        set = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user , primaryCat = selected_date['column_filter']).order_by('-date')
+
+
+
 
     context = {
-        'set': set
+        'set': set ,
+        'selected_date':selected_date
     }
-    return render(request, "Monthlytable.html", context)
-
-
-def user(request):
-    set = demDailyData.objects.filter(user='Sanjay')
-    print("-----------------------------------------------------------------------", set)
-
-    context = {
-        'set': set
-    }
-    return render(request, "Monthlytable.html", context)
-
-
-def News(request):
-    set = demDailyData.objects.filter(date__range=["2023-02-20", "2023-02-28"]).values('user', 'type').annotate(
-        total_amount=Sum('amount'))
-    set1 = demDailyData.objects.filter(user='Sanjay')
-    print("-----temp------------------------------------------------------------------", set)
-
-    context = {
-        'set': set,
-        'set1': set1
-    }
-
-    return render(request, "index.html", context)
+    return render(request, "dem_monthly_record_table.html", context)
