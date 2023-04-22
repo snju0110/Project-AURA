@@ -55,10 +55,11 @@ def edit_records(request, id):
         Ttype = request.POST["Ttype"]
         cat = request.POST["cat"]
         pcat = request.POST["gc"]
+        trip = request.POST["trip"]
 
         data = demDailyData.objects.filter(id=id).update(
             user=user, date=t_date, amount=amount, sentFrom=sf, sentTo=st, message=tm, type=Ttype, primaryCat=cat,
-            groupCat=pcat)
+            groupCat=pcat , trip = trip)
 
         print("New edited data: ", id, user, sf, st, date, tm, Ttype, cat, amount, pcat)
         return MonthTable(request)
@@ -91,7 +92,18 @@ def Login(request):
 
 
 def Jarvis_Headsup(request):
-    return render(request, "jarvis_dashboard.html")
+    current_user = request.user
+    user = current_user.username
+
+    today = date.today()
+    parsed_today = today.strftime("%Y-%m-%d")
+    startdate = str(date.today()).split('-')
+    MonthStartDate = str(startdate[0]) + '-' + str(startdate[1]) + '-01'
+    selected_date = {'from_date': MonthStartDate, 'to_date': parsed_today}
+
+    query_set = demDailyData.objects.filter(date__range=[MonthStartDate, today], user=user).values('type').annotate(
+        total_amount=Sum('amount'))
+    return render(request, "jarvis_wings.html" , {'data' : query_set})
 
 
 def DemMainPage(request):

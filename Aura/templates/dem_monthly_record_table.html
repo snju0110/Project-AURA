@@ -6,7 +6,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Corona Admin</title>
+    <title>All transactions view</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
@@ -22,7 +22,7 @@
     <!-- Layout styles -->
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" />
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon_money.png' %}" />
   </head>
 <!--   <a  href="user"> Monthly Analysis</a>-->
 
@@ -32,7 +32,15 @@
                 <div class="card">
                   <div class="card-body">
 
-                    <h4 class="card-title">Transactions History </h4>
+                       <a class="nav-link"  style="display: inline;" href="/transactionAnalysis/">
+                           <span class="menu-icon">
+                                <i class="mdi mdi-square-inc-cash"></i>
+                             </span>
+                                    <span class="menu-title">Expenses Dashboard /</span>
+                                </a>
+
+                      <h4 style="display: inline;" class="card-title">Transactions History </h4>
+                      <h4 class="card-title"></h4>
 
                       <form  action="/customtransaction/">
                           <input  type="date"  name="fdate" value = {{selected_date.from_date}} >
@@ -70,6 +78,7 @@
                             <th> Amount </th>
                             <th> Category </th>
                             <th> Transcation Message </th>
+                              <th> Trip </th>
                               <th> Actions </th>
                           </tr>
                         </thead>
@@ -96,6 +105,7 @@
                             <td> {{i.amount}} </td>
                             <td> {{i.primaryCat}}  </td>
                             <td> {{i.message}} </td>
+                              <td> {{i.trip}} </td>
                               <td> <a href = '/edit/{{i.id}}' >Edit record</a> </td>
 
                         </tbody>
